@@ -14,7 +14,7 @@ The implementation is based on the [Creating clustered EJB 3 Timers](http://www.
 
 ## Domain Configuration
 
-The Wildfly node designated as the `master`, defines itself as a domain controller within the [host-master.xml](host-master.xml) file.
+The Wildfly node designated as the `master`, defines itself as a domain controller within the [host-master.xml](https://github.com/damianmcdonald/ejb-clustered-timer/blob/master/configuration/host-master.xml) file.
 
 ```XML
  <domain-controller>
@@ -26,49 +26,49 @@ In this demo project, we are:
 * using the `<profile name="full">`
 * defining a single server group `<server-group name="main-server-group" profile="full">`
 
-In the [domain.xml](domain.xml) file we define the datasource and persistence approach for the Timer within the `<profile name="full">`.
+In the [domain.xml](https://github.com/damianmcdonald/ejb-clustered-timer/blob/master/configuration/domain.xml) file we define the datasource and persistence approach for the Timer within the `<profile name="full">`.
 
 **Datasource definition**
 
 ```SQL
 <subsystem xmlns="urn:jboss:domain:datasources:4.0">
-                <datasources>
-                    <datasource jndi-name="java:jboss/datasources/ExampleDS" pool-name="ExampleDS" enabled="true" use-java-context="true">
-                        <connection-url>jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE</connection-url>
-                        <driver>h2</driver>
-                        <security>
-                            <user-name>sa</user-name>
-                            <password>sa</password>
-                        </security>
-                    </datasource>
-                    <xa-datasource jndi-name="java:jboss/datasources/SpXaDsMysql" pool-name="SpXaDsMysql" enabled="true" use-java-context="true">
-                       <xa-datasource-property name="ServerName">
-                            ${database.host}
-                        </xa-datasource-property>
-                        <xa-datasource-property name="DatabaseName">
-                            ${database.name}
-                        </xa-datasource-property>
-                        <xa-datasource-property name="PortNumber">
-                            ${database.port}
-                        </xa-datasource-property>
-                        <xa-datasource-property name="User">
-                            ${database.username}
-                        </xa-datasource-property>
-                        <xa-datasource-property name="Password">
-                            ${database.password}
-                        </xa-datasource-property>
-                        <driver>mysql</driver>
-                    </xa-datasource>
-                    <drivers>
-                        <driver name="h2" module="com.h2database.h2">
-                            <xa-datasource-class>org.h2.jdbcx.JdbcDataSource</xa-datasource-class>
-                        </driver>
-                        <driver name="mysql" module="com.mysql.jdbc">
-                            <xa-datasource-class>com.mysql.jdbc.jdbc2.optional.MysqlXADataSource</xa-datasource-class>
-                        </driver>
-                    </drivers>
-                </datasources>
-            </subsystem>
+    <datasources>
+        <datasource jndi-name="java:jboss/datasources/ExampleDS" pool-name="ExampleDS" enabled="true" use-java-context="true">
+            <connection-url>jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE</connection-url>
+            <driver>h2</driver>
+            <security>
+                <user-name>sa</user-name>
+                <password>sa</password>
+            </security>
+        </datasource>
+        <xa-datasource jndi-name="java:jboss/datasources/SpXaDsMysql" pool-name="SpXaDsMysql" enabled="true" use-java-context="true">
+           <xa-datasource-property name="ServerName">
+                ${database.host}
+            </xa-datasource-property>
+            <xa-datasource-property name="DatabaseName">
+                ${database.name}
+            </xa-datasource-property>
+            <xa-datasource-property name="PortNumber">
+                ${database.port}
+            </xa-datasource-property>
+            <xa-datasource-property name="User">
+                ${database.username}
+            </xa-datasource-property>
+            <xa-datasource-property name="Password">
+                ${database.password}
+            </xa-datasource-property>
+            <driver>mysql</driver>
+        </xa-datasource>
+        <drivers>
+            <driver name="h2" module="com.h2database.h2">
+                <xa-datasource-class>org.h2.jdbcx.JdbcDataSource</xa-datasource-class>
+            </driver>
+            <driver name="mysql" module="com.mysql.jdbc">
+                <xa-datasource-class>com.mysql.jdbc.jdbc2.optional.MysqlXADataSource</xa-datasource-class>
+            </driver>
+        </drivers>
+    </datasources>
+</subsystem>
 ```
 
 *NOTE*: 
@@ -100,11 +100,11 @@ Additionally, in the `$WILDFLY_HOME/modules/system/layers/base/com/mysql/jdbc/ma
 
 ## Host Configuration
 
-The key point for the host configuration ([host-master.xml](host-master.xml) and [host-slave.xml](host-slave.xml) respectively is that the hosts are members of *main-server-group*: `<server name="server-one" group="main-server-group"/>`.
+The key point for the host configuration ([host-master.xml](https://github.com/damianmcdonald/ejb-clustered-timer/blob/master/configuration/host-master.xml) and [host-slave.xml](https://github.com/damianmcdonald/ejb-clustered-timer/blob/master/configuration/host-slave.xml) respectively is that the hosts are members of *main-server-group*: `<server name="server-one" group="main-server-group"/>`.
 
 ## Timer Creation
 
-The Timer is defined in the [BatchProcess](BatchProcess) class (shown below).
+The Timer is defined in the [BatchProcess](https://github.com/damianmcdonald/ejb-clustered-timer/blob/master/src/main/java/com/github/damianmcdonald/ejbtimer/BatchProcess.java) class (shown below).
 
 ```Java
 @Startup
@@ -159,7 +159,7 @@ This default SQL does not contain any controls for timer creation. Every time a 
 
 The [DatabaseTimerPersistence](https://github.com/wildfly/wildfly/blob/master/ejb3/src/main/java/org/jboss/as/ejb3/timerservice/persistence/database/DatabaseTimerPersistence.java) class provided by Wildfly uses a [PreparedStatement](https://docs.oracle.com/javase/8/docs/api/java/sql/PreparedStatement.html) that does not support named paramaters. For this reason, it is not possibile to use the provided parameters (the `?`entries in the SQL) multiple times.
 
-In order to achieve the level of control that we require, within the constraints of not modifying the Wildfly source code, it is necessary to create a Stored Procedure ([create_ejb_timer_proc.sql](create_ejb_timer_proc.sql)).
+In order to achieve the level of control that we require, within the constraints of not modifying the Wildfly source code, it is necessary to create a Stored Procedure ([create_ejb_timer_proc.sql](https://github.com/damianmcdonald/ejb-clustered-timer/blob/master/sql/create-timer-proc.sql)).
 
 ```SQL
 DROP PROCEDURE IF EXISTS create_ejb_timer_proc;
@@ -222,13 +222,13 @@ create-timer={call create_ejb_timer_proc(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 
 
 **Domain Controller**
 
-The [host-master.xml](host-master.xml) file should be copied to `$WILDFLY_HOME/domain/configuration/host-master.xml` on the node deignated as the Domian Controller.
+The [host-master.xml](https://github.com/damianmcdonald/ejb-clustered-timer/blob/master/configuration/host-master.xml) file should be copied to `$WILDFLY_HOME/domain/configuration/host-master.xml` on the node deignated as the Domian Controller.
 
 The Domain Controller can be started with: `$WILDFLY_HOME/bin/domain.sh --host-config=host-master.xml`
 
 **Domain Nodes**
 
-The [host-slave.xml](host-slave.xml) file should be copied to `$WILDFLY_HOME/domain/configuration/host-slave.xml` on the domain nodes.
+The [host-slave.xml](https://github.com/damianmcdonald/ejb-clustered-timer/blob/master/configuration/host-slave.xml) file should be copied to `$WILDFLY_HOME/domain/configuration/host-slave.xml` on the domain nodes.
 
 The Domain Nodes can be started with: `$WILDFLY_HOME/bin/domain.sh --host-config=host-slave.xml`
 
