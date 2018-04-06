@@ -100,7 +100,7 @@ Additionally, in the `$WILDFLY_HOME/modules/system/layers/base/com/mysql/jdbc/ma
 
 ## Host Configuration
 
-The key point for the host configuration ([host-master.xml](https://github.com/damianmcdonald/ejb-clustered-timer/blob/master/configuration/host-master.xml) and [host-slave.xml](https://github.com/damianmcdonald/ejb-clustered-timer/blob/master/configuration/host-slave.xml) respectively is that the hosts are members of *main-server-group*: `<server name="server-one" group="main-server-group"/>`.
+The key point for the host configuration ([host-master.xml](https://github.com/damianmcdonald/ejb-clustered-timer/blob/master/configuration/host-master.xml) and [host-slave.xml](https://github.com/damianmcdonald/ejb-clustered-timer/blob/master/configuration/host-slave.xml) respectively) is that the hosts are members of *main-server-group*: `<server name="server-one" group="main-server-group"/>`.
 
 ## Timer Creation
 
@@ -126,7 +126,7 @@ public class BatchProcess {
 
 The Timer is being created programmatically and it is *persisted* every time that the application starts.
 
-This number of registered Timers can be calculated as:
+The number of registered Timers can be calculated as:
 
 `number of Timers registered = (number of domain nodes) + (number of times each node has been restarted)`
 
